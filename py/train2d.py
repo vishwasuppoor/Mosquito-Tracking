@@ -60,7 +60,7 @@ im_size = (5, 108, 192)
 if args.model == 'model2d':
     model = model2d(im_size, n_classes)
 elif args.continue_training:
-    model = torch.load('weights/'+args.weights+'.pt')
+    model = torch.load('../weights/'+args.weights+'.pt')
 if args.cuda:
     model.cuda()
 # cross-entropy loss function
@@ -68,8 +68,8 @@ criterion = F.cross_entropy
 # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
-train_data = np.load('data/train/'+args.trainfile+'.npy')
-train_label = np.load('labels/train/'+args.labelfile+'.npy')
+train_data = np.load('../data/train/'+args.trainfile+'.npy')
+train_label = np.load('../labels/train/'+args.labelfile+'.npy')
 
 
 def loader(dataset,label,batch_size):
@@ -97,7 +97,7 @@ def train(epoch):
     # train loop
     for X, Y in loader(train_data,train_label,args.batch_size):
         # prepare data
-        images, targets = Variable(torch.tensor(X)), Variable(torch.tensor(Y))
+        images, targets = Variable(torch.tensor(X)), Variable(torch.tensor(Y[:,0]))
         images, targets = images.float(), targets.long()
         if args.cuda:
             images, targets = images.cuda(), targets.cuda()
@@ -131,7 +131,7 @@ def evaluate(split, verbose=False):
         loader_data, loader_label, loader_batch_size = validation_data, validation_label, args.batch_size
     for X, Y in loader(loader_data, loader_label, loader_batch_size):
         with torch.no_grad():
-            images, targets = Variable(torch.tensor(X)), Variable(torch.tensor(Y))
+            images, targets = Variable(torch.tensor(X)), Variable(torch.tensor(Y[:,0]))
             images, targets = images.float(), targets.long()
             if args.cuda:
                 images, targets = images.cuda(), targets.cuda()
@@ -157,9 +157,9 @@ for epoch in range(1, args.epochs + 1):
 evaluate('train', verbose=True)
 
 if args.validate:
-    validation_data = np.load('data/validation/'+args.trainfile+'.npy')
-    validation_label = np.load('labels/validation/'+args.labelfile+'.npy')
+    validation_data = np.load('../data/validation/'+args.trainfile+'.npy')
+    validation_label = np.load('../labels/validation/'+args.labelfile+'.npy')
     evaluate('validation', verbose=True)
 
 # Save the model (architecture and weights)
-torch.save(model, 'weights/' + args.trainfile + '_' + args.model + '.pt')
+torch.save(model, '../weights/' + args.trainfile + '_' + args.model + '.pt')

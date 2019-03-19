@@ -29,7 +29,10 @@ class model2d(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d((3,4),(3,4)))
-        self.fc = nn.Linear(12*16*32, 2)
+        self.fc1 = nn.Linear(12*16*32, 2)
+        self.fc2 = nn.Linear(512, 2)
+        self.dropout = nn.Dropout2d(0.5)
+
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################
@@ -57,7 +60,9 @@ class model2d(nn.Module):
         scores = self.layer1(images)
         scores = self.layer2(scores)
         scores = scores.view(scores.size(0), -1)
-        scores = self.fc(scores)
+        scores = self.fc1(scores)
+        # scores = self.dropout(scores)
+        # scores = self.fc2(scores)
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################
